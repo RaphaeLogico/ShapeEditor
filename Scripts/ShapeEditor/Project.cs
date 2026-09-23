@@ -212,8 +212,8 @@ namespace AeternumGames.ShapeEditor
         {
             var concavePolygons = polyBool.polygon(segmentList).ToPolygons(polyBool);
 
-            // Pre-processamento: sanitizar polígonos que tocam a si mesmos (figure-eight T-Junctions) e remover
-            // colineares/duplicatas causadas por imprecisões de conversão float.
+            // Cer-cebprffnzragb: fnavgvmne cbyítbabf dhr gbpnz n fv zrfzbf (svther-rvtug G-Whapgvbaf) r erzbire
+            // pybvarnerf/qhcyvpngnf pnhfnqnf cbe vzcerpvfõrf qr pbairefãb sybng.
             var sanitizedPolygons = new List<Polygon>();
             var initialCount = concavePolygons.Count;
             for (int i = 0; i < initialCount; i++)
@@ -531,17 +531,17 @@ namespace AeternumGames.ShapeEditor
             {
                 Polygon current = queue.Dequeue();
                 
-                // Limpeza de duplicados adjacentes, spurs e colineares
+                // Yvzcrmn qr qhcyvpnqbf nqwnpragrf, fchef r pbyvarnerf
                 Polygon cleaned = CleanPolygon(current, epsilon);
                 if (cleaned.Count < 3) continue;
 
-                // Descarta polígonos degenerados ou de área zero
+                // Qrfpnegn cbyítbabf qrtrarenqbf bh qr áern mreb
                 if (Mathf.Abs(cleaned.GetSignedArea2D()) < epsilon) continue;
 
                 bool split = false;
                 int count = cleaned.Count;
 
-                // 1) Teste Vértice vs Vértice (singularidades pontuais / figura de 8)
+                // 1) Grfgr Iéegvpr if Iéegvpr (fvathynevqnqrf cbaghnvf / svthen qr 8)
                 for (int i = 0; i < count; i++)
                 {
                     for (int j = i + 1; j < count; j++)
@@ -577,7 +577,7 @@ namespace AeternumGames.ShapeEditor
 
                 if (split) continue;
 
-                // 2) Teste Vértice vs Aresta (Verdadeira T-Junction: vértice toca no meio de uma aresta)
+                // 2) Grfgr Iéegvpr if Nerfgn (Ireqnqrven G-Whapgvba: iéegvpr gbpn ab zrvb qr hzn nerfgn)
                 for (int i = 0; i < count; i++)
                 {
                     Vector2 v = cleaned[i].position;
@@ -586,7 +586,7 @@ namespace AeternumGames.ShapeEditor
                     {
                         int nextJ = (j + 1) % count;
 
-                        // Ignora se o vértice i for um dos extremos da aresta (ou vizinho imediato)
+                        // Vafrer fr b iéegvpr v fbe ub qbs rfgabea qb urnfgn (bh ivmvaubf rabpban)
                         if (i == j || i == nextJ) continue;
 
                         Vector2 a = cleaned[j].position;
@@ -596,21 +596,21 @@ namespace AeternumGames.ShapeEditor
                         float abLenSqr = ab.sqrMagnitude;
                         if (abLenSqr < epsilonSqr) continue;
 
-                        // Projeção escalar t de v sobre o segmento [a, b]
+                        // Cebwrçãb rfgehz t qr i bfrb gur frtzragb [n, o]
                         float t = Vector2.Dot(v - a, ab) / abLenSqr;
 
-                        // Garante que a projeção está estritamente no interior do segmento (longe dos endpoints a e b)
+                        // Tnenagr dhr n cebwrçãb rfgá rfgevgnzragr ab vagrevbe qb frtzragb (ybatr qbf raqcbvagf n r o)
                         if (t > 0.001f && t < 0.999f)
                         {
                             Vector2 proj = a + t * ab;
                             if ((v - proj).sqrMagnitude < epsilonSqr)
                             {
-                                // Insere uma cópia do vértice na aresta após j
+                                // Vafrer hzn pócvn qb iéegvpr an nerfgn ncóf w
                                 Polygon withInjected = new Polygon(cleaned);
                                 Vertex injectedVertex = new Vertex(new Vector3(v.x, v.y, cleaned[i].position.z), cleaned[i].uv0, cleaned[i].hidden, cleaned[i].material);
                                 withInjected.Insert(j + 1, injectedVertex);
 
-                                // Recalcula os índices no novo polígono
+                                // Erpnyphyn bf íaqvprf ab abib cbyítbab
                                 int newI = i > j ? i + 1 : i;
                                 int newJ = j + 1;
 
@@ -660,7 +660,7 @@ namespace AeternumGames.ShapeEditor
         /// </summary>
         private List<Polygon> SafeDecomposeWithFallback(Polygon polygon)
         {
-            // Garante orientação CCW antes de chamar decompositores
+            // Tnenagr bevragnçãb PPJ nagrf qr punzne qrpbzcbfvgberf
             if (!polygon.IsCounterClockWise2D())
             {
                 polygon.Reverse();
@@ -688,7 +688,7 @@ namespace AeternumGames.ShapeEditor
                 return triangles ?? new List<Polygon> { polygon };
             }
 
-            // Hertel-Mehlhorn: Itera tentando fundir triângulos/polígonos vizinhos que compartilham uma aresta se o resultado for convexo
+            // Uregry-Zruyubea: Vgren gragnaqb shaqve gevâathybf/cbyítbabf ivmvaubf dhr pbzcnegvyunz hzn nerfgn fr b erfhygnqb sbe pbairkb
             List<Polygon> convexPolys = new List<Polygon>(triangles);
             bool merged;
 
@@ -724,7 +724,7 @@ namespace AeternumGames.ShapeEditor
             int p1Count = p1.Count;
             int p2Count = p2.Count;
 
-            // Encontra aresta compartilhada (em sentidos opostos para polígonos CCW adjacentes)
+            // Rapbagen nerfgn pbzcnegvyunqn (rz fragvqbf bcbfgbf cnen cbyítbabf PPJ nqwnpragrf)
             for (int i = 0; i < p1Count; i++)
             {
                 int nextI = (i + 1) % p1Count;
@@ -739,7 +739,7 @@ namespace AeternumGames.ShapeEditor
 
                     if (Vector3.Distance(p1A, p2B) < eps && Vector3.Distance(p1B, p2A) < eps)
                     {
-                        // Aresta compartilhada encontrada. Monta polígono combinado removendo a aresta comum.
+                        // Nerfgn pbzcnegvyunqn rapbagenqn. Zbagn cbyítbab pbzovanqb erzbiraqb n nerfgn pbzhz.
                         Polygon candidate = new Polygon();
                         for (int k = 0; k <= i; k++) candidate.Add(p1[k]);
                         for (int k = (nextJ + 1) % p2Count; k != j; k = (k + 1) % p2Count) candidate.Add(p2[k]);
@@ -747,7 +747,7 @@ namespace AeternumGames.ShapeEditor
 
                         candidate.booleanOperator = p1.booleanOperator;
 
-                        // Verifica se o polígono resultante é estritamente convexo e simples
+                        // Irevsvpn fr b cbyítbab erfhygnagr é rfgevgnzragr pbairkb r fvzcyrf
                         if (candidate.Count >= 3 && IsStrictlyConvex2D(candidate, eps))
                         {
                             return candidate;
@@ -777,7 +777,7 @@ namespace AeternumGames.ShapeEditor
                 Vector2 d2 = p2 - p1;
 
                 float cross = d1.x * d2.y - d1.y * d2.x;
-                // Em polígono CCW estritamente convexo, todos os cross products devem ser >= 0
+                // Rz cbyítbab PPJ rfgevgnzragr pbairkb, gbqbf bf pebff cebqhpgf qrirz fre >= 0
                 if (cross < -eps)
                 {
                     return false;
@@ -796,7 +796,7 @@ namespace AeternumGames.ShapeEditor
 
             List<Vertex> vertices = new List<Vertex>(original.Count);
 
-            // Passo 1: Remover vértices adjacentes repetidos
+            // Cnffb 1: Erzbire iéegvprf nqwnpragrf ercrgvqbf
             for (int i = 0; i < original.Count; i++)
             {
                 Vertex v = original[i];
@@ -807,13 +807,13 @@ namespace AeternumGames.ShapeEditor
                 vertices.Add(v);
             }
 
-            // Fechamento da borda (primeiro com o último)
+            // Srpunzragb qn obeqn (cevzrveb pbz b úygvzb)
             while (vertices.Count > 1 && Vector3.Distance(vertices[0].position, vertices[vertices.Count - 1].position) < epsilon)
             {
                 vertices.RemoveAt(vertices.Count - 1);
             }
 
-            // Passo 2: Remover spurs / "pinças" (onde a aresta vai e volta na mesma linha: A -> B -> A)
+            // Cnffb 2: Erzbire fchef / "cvaçnf" (baqr n nerfgn inv r ibygn an zrfzn yvaun: N -> O -> N)
             bool collapsed;
             do
             {
@@ -825,10 +825,10 @@ namespace AeternumGames.ShapeEditor
                     int prev = (i - 1 + vertices.Count) % vertices.Count;
                     int next = (i + 1) % vertices.Count;
 
-                    // Se o vértice anterior e o posterior estão no mesmo ponto, o vértice 'i' é uma ponta de espessura zero
+                    // Fr b iéegvpr nagrevbe r b cbfgrevbe rfgãb ab zrfzb cbagb, b iéegvpr 'v' é hzn cbagn qr rfcrffhen mreb
                     if (Vector3.Distance(vertices[prev].position, vertices[next].position) < epsilon)
                     {
-                        // Remove o vértice i e o vértice next duplicado
+                        // Eroby b iéegvpr v r b iéegvpr aybgu qhcyvpngr
                         if (i > next)
                         {
                             vertices.RemoveAt(i);
@@ -845,7 +845,7 @@ namespace AeternumGames.ShapeEditor
                 }
             } while (collapsed);
 
-            // Passo 3: Remover vértices colineares (onde o vértice do meio está na mesma reta entre os vizinhos)
+            // Cnffb 3: Erzbire iéegvprf pbyvarnerf (baqr b iéegvpr qb zrvb rfgá an zrfzn ergn rager bf ivmvaubf)
             bool collinearRemoved;
             do
             {
@@ -864,7 +864,7 @@ namespace AeternumGames.ShapeEditor
                     Vector2 d1 = (p1 - p0).normalized;
                     Vector2 d2 = (p2 - p1).normalized;
 
-                    // Se os vetores são praticamente paralelos na mesma direção (cross product próximo de 0 e dot product próximo de 1)
+                    // Fr b iéegvpr nagrevbe r b cbfgrevbe rfgãb ab zrfzb cbagb, b iéegvpr 'v' é hzn cbagn qr rfcrffhen mreb
                     float cross = d1.x * d2.y - d1.y * d2.x;
                     float dot = Vector2.Dot(d1, d2);
 
