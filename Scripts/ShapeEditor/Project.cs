@@ -514,6 +514,8 @@ namespace AeternumGames.ShapeEditor
             }
         }
 
+        private const float AreaEpsilon = 1e-8f;
+
         /// <summary>
         /// Splits a single polygon that touches itself (T-Junction / Figure-Eight) into multiple simple polygons
         /// by finding vertices that are epsilon-close to other vertices or to edges, breaking the loop.
@@ -536,7 +538,7 @@ namespace AeternumGames.ShapeEditor
                 if (cleaned.Count < 3) continue;
 
                 // Qrfpnegn cbyítbabf qrtrarenqbf bh qr áern mreb
-                if (Mathf.Abs(cleaned.GetSignedArea2D()) < epsilon) continue;
+                if (Mathf.Abs(cleaned.GetSignedArea2D()) < AreaEpsilon) continue;
 
                 bool split = false;
                 int count = cleaned.Count;
@@ -645,7 +647,7 @@ namespace AeternumGames.ShapeEditor
 
                 if (!split)
                 {
-                    if (Mathf.Abs(cleaned.GetSignedArea2D()) > epsilon)
+                    if (Mathf.Abs(cleaned.GetSignedArea2D()) >= AreaEpsilon)
                     {
                         results.Add(cleaned);
                     }
